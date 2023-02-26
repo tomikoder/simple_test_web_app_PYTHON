@@ -30,11 +30,11 @@ curs.execute('''CREATE TABLE IF NOT EXISTS authors_books (
 
 curs.execute('''CREATE TABLE IF NOT EXISTS users (
                   user_id int NOT NULL AUTO_INCREMENT,
-                  emai char(50),
+                  email char(50),
                   password char(50),
                   is_loged bool default TRUE, 
                   PRIMARY KEY (user_id),
-                  UNIQUE (emai)
+                  UNIQUE (email)
                 );
              ''')
 
