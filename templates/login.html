@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h1>Logowanie</h1>
+
+<form action="/cgi-bin/login.py"  method="post">
+  <label for="mail">Mail:</label><br>
+  <input type="text" id="mail" name="mail"><br>
+  <label for="pass">Password:</label><br>
+  <input type="password" id="pass" name="pass"><br><br>
+  <input type="submit" value="Submit">
+</form>
+
+<a href="/cgi-bin/registration.py">rejestracja</a>
+
+{% for error in errors %}
+    <h1 style="color:Tomato;">{{ error }}</h1>
+{% endfor %}
+
+</body>
+</html>
