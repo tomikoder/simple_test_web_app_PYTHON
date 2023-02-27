@@ -6,21 +6,33 @@ import http.cookies, os, cgi
 from form_validator import login_validate_form_data
 from settings import DATA_TO_LOGIN_TO_DB
 from MySQLdb import Connect
-from base64 import b64encode
+from helpfunctions import convert_str, check_session
+import uuid
+
+environment = Environment(loader=FileSystemLoader("C:\\Users\\Tomek\\PycharmProjects\\some_project\\templates"))
 
 cookstr = os.environ.get("HTTP_COOKIE")
 cookies = http.cookies.SimpleCookie(cookstr)
-usercook = cookies.get("simple_web_app_cookies")
-environment = Environment(loader=FileSystemLoader("C:\\Users\\Tomek\\PycharmProjects\\some_project\\templates"))
 
-if os.environ['REQUEST_METHOD'] == 'GET':
-    if usercook == None:  # create first time
-        cookies = http.cookies.SimpleCookie()
-        cookies['simple_web_app_cookies'] = {}
+
+success_login = False
+
+
+is_loged = check_session(cookies)
+
+
+if (is_loged):
 
     template = environment.get_template("login.html")
 
-    print(template.render())
+    print(template.render(cookies=cookies))
+
+
+if os.environ['REQUEST_METHOD'] == 'GET':
+
+    template = environment.get_template("login.html")
+
+    print(template.render(cookies=cookies, success_login=success_login))
 
 elif os.environ['REQUEST_METHOD'] == 'POST':
     form = cgi.FieldStorage()
@@ -29,25 +41,45 @@ elif os.environ['REQUEST_METHOD'] == 'POST':
         template = environment.get_template("login.html")
         print(template.render(errors=errors))
     else:
+
         conn = Connect(**DATA_TO_LOGIN_TO_DB)
         curs = conn.cursor()
-        mail = form['mail'].value
-        password = form['pass'].value
-        test = curs.execute('SELECT EXISTS(SELECT NULL FROM persons WHERE email = %s);' % (mail))
-        if not (test[0]):
-            template = environment.get_template("login.html")
-            print(template.render(errors=["Email już jest w bazie danych"]))
-        else:
-            curs.execute('''INSERT INTO users (email, password)
-                                       VALUES (%s, %s);
-                         ''' % (mail, password))
+        mail = convert_str(form['mail'].value)
+        password = convert_str(form['pass'].value)
+        row_exists = curs.execute('SELECT user_id FROM users WHERE email = %s AND password = %s;' % (mail, password))
+        if row_exists:
+            user_id = curs.fetchone()[0]
+            curs.execute('''UPDATE users 
+                        SET is_loged = TRUE
+                        WHERE user_id = %s;
+                        ''' % (user_id))
+            new_session = str(uuid.uuid1())
+            curs.execute('''UPDATE sessions
+                            SET session_id = CURRENT_TIMESTAMP() + 10000, session_id = %s 
+                            WHERE user_id = %s; 
+                        ''' % (convert_str(new_session), user_id))
+            conn.commit()
+            success_login = True
+            cookies = http.cookies.SimpleCookie()
+            cookies['user'] = user_id
+            cookies['session'] = new_session
 
-            session_key = os.urandom(50)
-            session_key = b64encode(session_key).decode('utf-8')
-            user_id = curs.execute('''
-                                    SELECT user_id FROM users WHERE email = %s;
-                                   ''' % (mail))[0]
-            curs.execute('''INSERT INTO sessions (session_id, user_id, expire_time)''')
+            template = environment.get_template("login.html")
+            print(template.render(cookies=cookies, success_login=success_login))
+
+        else:
+            template = environment.get_template("login.html")
+            print(template.render(errors=["Nie poprawne hasło lub email"]))
+
+
+
+
+
+
+
+
+
+
 
 
 
