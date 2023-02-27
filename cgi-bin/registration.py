@@ -6,21 +6,14 @@ import os
 import http.cookies, os, cgi
 from form_validator import login_validate_form_data
 from MySQLdb import Connect
-from settings import DATA_TO_LOGIN_TO_DB
-from base64 import b64encode
+from settings import DATA_TO_LOGIN_TO_DB, PROJECT_DIR
+from helpfunctions import convert_str
+import uuid
 
-cookstr = os.environ.get("HTTP_COOKIE")
-cookies = http.cookies.SimpleCookie(cookstr)
-usercook = cookies.get("simple_web_app_cookies")
-environment = Environment(loader=FileSystemLoader("C:\\Users\\Tomek\\PycharmProjects\\some_project\\templates"))
+environment = Environment(loader=FileSystemLoader(os.path.join(PROJECT_DIR, 'templates')))
 
 if os.environ['REQUEST_METHOD'] == 'GET':
-    if usercook == None:  # create first time
-        cookies = http.cookies.SimpleCookie()
-        cookies['simple_web_app_cookies'] = {}
-
     template = environment.get_template("registration.html")
-
     print(template.render())
 
 elif os.environ['REQUEST_METHOD'] == 'POST':
@@ -32,23 +25,48 @@ elif os.environ['REQUEST_METHOD'] == 'POST':
     else:
         conn = Connect(**DATA_TO_LOGIN_TO_DB)
         curs = conn.cursor()
-        mail = form['mail'].value
-        password = form['pass'].value
-        test = curs.execute('SELECT EXISTS(SELECT NULL FROM persons WHERE email = %s);' % (mail))
-        if not (test[0]):
-            template = environment.get_template("login.html")
+        mail = convert_str(form['mail'].value)
+        password = convert_str(form['pass'].value)
+        test = curs.execute('''SELECT NULL FROM users WHERE email = %s; 
+                            ''' % (mail))
+        if (test):
+            template = environment.get_template("registration.html")
             print(template.render(errors=["Email już jest w bazie danych"]))
         else:
             curs.execute('''INSERT INTO users (email, password)
                                        VALUES (%s, %s);
                          ''' % (mail, password))
+            conn.commit()
 
-            session_key = os.urandom(50)
-            session_key = b64encode(session_key).decode('utf-8')
-            user_id = curs.execute('''
-                                    SELECT user_id FROM users WHERE email = %s;
-                                   ''' % (mail))[0]
-            curs.execute('''INSERT INTO sessions (session_id, user_id, expire_time)''')
+            curs.execute('''SELECT user_id FROM users
+                            WHERE email = %s;
+                         ''' % (mail))
+
+            user_id = curs.fetchone()[0]
+
+
+            new_session = str(uuid.uuid1())
+
+            test = curs.execute('''INSERT INTO sessions (session_id, user_id, expire_time)
+                                                VALUES  (%s, %s, CURRENT_TIMESTAMP() + 10000);
+                                ''' % (convert_str(new_session), user_id))
+
+            conn.commit()
+
+            cookies = http.cookies.SimpleCookie()
+            cookies['user'] = user_id
+            cookies['session'] = new_session
+            template = environment.get_template("menu.html")
+            print(template.render(errors=errors))
+
+
+
+
+
+
+
+
+
 
 
 

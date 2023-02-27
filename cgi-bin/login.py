@@ -4,12 +4,12 @@
 from jinja2 import Environment, FileSystemLoader
 import http.cookies, os, cgi
 from form_validator import login_validate_form_data
-from settings import DATA_TO_LOGIN_TO_DB
+from settings import DATA_TO_LOGIN_TO_DB, PROJECT_DIR
 from MySQLdb import Connect
 from helpfunctions import convert_str, check_session
 import uuid
 
-environment = Environment(loader=FileSystemLoader("C:\\Users\\Tomek\\PycharmProjects\\some_project\\templates"))
+environment = Environment(loader=FileSystemLoader(os.path.join(PROJECT_DIR, 'templates')))
 
 cookstr = os.environ.get("HTTP_COOKIE")
 cookies = http.cookies.SimpleCookie(cookstr)
@@ -23,12 +23,14 @@ is_loged = check_session(cookies)
 
 if (is_loged):
 
-    template = environment.get_template("login.html")
+    success_login = True
 
-    print(template.render(cookies=cookies))
+    template = environment.get_template("menu.html")
+
+    print(template.render(cookies=cookies, success_login=success_login))
 
 
-if os.environ['REQUEST_METHOD'] == 'GET':
+elif os.environ['REQUEST_METHOD'] == 'GET':
 
     template = environment.get_template("login.html")
 

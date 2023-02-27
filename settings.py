@@ -8,3 +8,5 @@ DATA_TO_LOGIN_TO_DB = {
     'port': 4000,
     'database':'testDB'
 }
+
+print(PROJECT_DIR)
