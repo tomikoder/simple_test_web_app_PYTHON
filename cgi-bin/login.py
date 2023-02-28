@@ -15,7 +15,6 @@ cookstr = os.environ.get("HTTP_COOKIE")
 cookies = http.cookies.SimpleCookie(cookstr)
 
 
-success_login = False
 
 
 is_loged = check_session(cookies)
@@ -23,20 +22,17 @@ is_loged = check_session(cookies)
 
 if (is_loged):
 
-    success_login = True
     link_to_redirect = YOUR_DOMAIN + 'menu.py'
 
     print(cookies)
     print('Refresh: 0; %s' % link_to_redirect)
-    template = environment.get_template("login.html")
-    print(template.render(success_login=success_login))
 
 
 elif os.environ['REQUEST_METHOD'] == 'GET':
 
     template = environment.get_template("login.html")
     print(cookies)
-    print(template.render(success_login=success_login))
+    print(template.render())
 
 elif os.environ['REQUEST_METHOD'] == 'POST':
     form = cgi.FieldStorage()
@@ -64,16 +60,13 @@ elif os.environ['REQUEST_METHOD'] == 'POST':
                         ''' % (convert_str(new_session), user_id))
             conn.commit()
 
-            success_login = True
             cookies = http.cookies.SimpleCookie()
             cookies['user'] = user_id
             cookies['session'] = new_session
 
-            template = environment.get_template("login.html")
             link_to_redirect = YOUR_DOMAIN + 'menu.py'
             print(cookies)
             print('Refresh: 0; %s' % link_to_redirect)
-            print(template.render(success_login=success_login))
 
         else:
             template = environment.get_template("login.html")

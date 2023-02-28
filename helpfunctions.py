@@ -14,8 +14,8 @@ def check_session(cookies):
     session = cookies['session'].value
     conn = Connect(**DATA_TO_LOGIN_TO_DB)
     curs = conn.cursor()
-    is_valid = curs.execute('''SELECT NULL FROM sessions
-                               WHERE user_id = %s AND session_id = %s AND expire_time >= CURRENT_TIMESTAMP(); 
+    is_valid = curs.execute('''SELECT NULL FROM sessions AS s INNER JOIN users AS u ON s.user_id = u.user_id
+                               WHERE s.user_id = %s AND s.session_id = %s AND s.expire_time >= CURRENT_TIMESTAMP() AND u.is_loged; 
                         ''' % (user, convert_str(session)))
 
     if is_valid:

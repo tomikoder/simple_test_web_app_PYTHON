@@ -11,21 +11,18 @@ cookies = http.cookies.SimpleCookie(cookstr)
 
 is_loged = check_session(cookies)
 
-success_login = True
-
 
 if not (is_loged):
 
-    success_login = False
     link_to_redirect = YOUR_DOMAIN + 'login.py'
-
-    print(cookies)
     print('Refresh: 0; %s' % link_to_redirect)
-    template = environment.get_template("menu.html")
-    print(template.render(success_login=success_login))
 else:
 
-    environment = Environment(loader=FileSystemLoader("C:\\Users\\Tomek\\PycharmProjects\\some_project\\templates"))
+    environment = Environment(loader=FileSystemLoader(os.path.join(PROJECT_DIR, 'templates')))
     template = environment.get_template("menu.html")
+    conn = Connect(**DATA_TO_LOGIN_TO_DB)
+    curs = conn.cursor()
+    curs.execute('''SELECT email FROM users WHERE user_id = %s;''' % (cookies['user'].value))
+    email =  curs.fetchone()[0]
     print(cookies)
-    print(template.render())
+    print(template.render(email=email))

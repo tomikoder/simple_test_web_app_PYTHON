@@ -6,7 +6,7 @@ import os
 import http.cookies, os, cgi
 from form_validator import login_validate_form_data
 from MySQLdb import Connect
-from settings import DATA_TO_LOGIN_TO_DB, PROJECT_DIR
+from settings import DATA_TO_LOGIN_TO_DB, PROJECT_DIR, YOUR_DOMAIN
 from helpfunctions import convert_str
 import uuid
 
@@ -47,8 +47,8 @@ elif os.environ['REQUEST_METHOD'] == 'POST':
 
             new_session = str(uuid.uuid1())
 
-            test = curs.execute('''INSERT INTO sessions (session_id, user_id, expire_time)
-                                                VALUES  (%s, %s, CURRENT_TIMESTAMP() + 10000);
+            curs.execute('''INSERT INTO sessions (session_id, user_id, expire_time)
+                                         VALUES  (%s, %s, DATE_ADD(now() , INTERVAL 1 HOUR));
                                 ''' % (convert_str(new_session), user_id))
 
             conn.commit()
@@ -56,8 +56,10 @@ elif os.environ['REQUEST_METHOD'] == 'POST':
             cookies = http.cookies.SimpleCookie()
             cookies['user'] = user_id
             cookies['session'] = new_session
-            template = environment.get_template("menu.html")
-            print(template.render(errors=errors))
+
+            link_to_redirect = YOUR_DOMAIN + 'menu.py'
+            print(cookies)
+            print('Refresh: 0; %s' % link_to_redirect)
 
 
 

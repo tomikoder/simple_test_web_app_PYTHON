@@ -7,7 +7,6 @@
 <body>
 
 
-    {% if not success_login %}
     <H1>Login</H1>
     <form action="/cgi-bin/login.py"  method="post">
         <label for="mail">Mail:</label><br>
@@ -17,14 +16,11 @@
         <input type="submit" value="Submit">
     </form>
 
-    <a href="/cgi-bin/registration.py">registration</a>
+    <a href="/cgi-bin/registration.py">rejestracja</a>
 
     {% for e in errors %}
         <H1 style="color:Tomato;">{{ e }}</H1>
     {% endfor %}
-    {% else %}
-    <h1></h1>
-    {% endif %}
 
 </body>
 </html>
