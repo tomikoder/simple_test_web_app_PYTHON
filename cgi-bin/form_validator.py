@@ -3,7 +3,7 @@ def login_validate_form_data(form):
     if len(form.list) == 2:
         return errors
     if not 'mail' in form:
-        errors.append('Nie wpisałeś meila')
+        errors.append('Please enter the email')
     if not 'pass' in form:
-        errors.append('Nie wpisałeś hasła')
+        errors.append('Please enter the password')
     return errors

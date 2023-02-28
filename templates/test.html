@@ -2,15 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>login</title>
 </head>
 <body>
 
-KURWA
+    {% if not success_login %}
+    <H1>Logowanie</H1>
+    <form action="/cgi-bin/login.py"  method="post">
+        <label for="mail">Mail:</label><br>
+        <input type="text" id="mail" name="mail"><br>
+        <label for="pass">Password:</label><br>
+        <input type="password" id="pass" name="pass"><br><br>
+        <input type="submit" value="Submit">
+    </form>
 
-<h1>{{ v1 }} </h1>
-<h1>{{ v2 }} </h1>
+    <a href="/cgi-bin/registration.py">rejestracja</a>
 
-
+    {% for e in errors %}
+        <H1 style="color:Tomato;">{{ error }}</H1>
+    {% endfor %}
+    {% else %}
+    <H1>Yooo</H1>
+    {% endif %}
 </body>
 </html>
