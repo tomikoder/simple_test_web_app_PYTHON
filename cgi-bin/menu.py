@@ -18,7 +18,6 @@ if not (is_loged):
     print('Refresh: 0; %s' % link_to_redirect)
 else:
 
-    environment = Environment(loader=FileSystemLoader(os.path.join(PROJECT_DIR, 'templates')))
     template = environment.get_template("menu.html")
     conn = Connect(**DATA_TO_LOGIN_TO_DB)
     curs = conn.cursor()
