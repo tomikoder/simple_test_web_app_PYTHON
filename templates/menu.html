@@ -5,9 +5,23 @@
 </head>
 <body>
 
-<h1>Hello {{ email }}</h1>
+    <h1>Hello {{ email }}</h1>
+    <h1><a href="/cgi-bin/logout.py">logout</a></h1>
+    <h1><a href="/cgi-bin/admin.py">admin panel</a></h1>
 
-<a href="/cgi-bin/logout.py">logout</a>
+
+    <br>
+    <br>
+    <br>
+    <h1>Books in DB</h1>:
+    {% for b in books %}
+
+    <h3>{{ b.title }}</h3>
+    <b>Author:</b> {{ b.authors }}</p>
+    <p><b>Description</b>: {{ b.description }}</p>
+    <p>Price: {{ b.price }}</p>
+    <br>
+    {% endfor %}
 
 </body>
 </html>

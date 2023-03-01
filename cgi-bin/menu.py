@@ -24,5 +24,19 @@ else:
     curs = conn.cursor()
     curs.execute('''SELECT email FROM users WHERE user_id = %s;''' % (cookies['user'].value))
     email =  curs.fetchone()[0]
+    curs.execute('''SELECT GROUP_CONCAT(CAST(a.author_id AS CHAR), ' ') AS authors_id, GROUP_CONCAT(CONCAT(a.first_name, ' ', a.last_name), ' ') AS authors, b.* FROM authors AS a INNER JOIN authors_books AS ab ON a.author_id = ab.author_id
+                                                              INNER JOIN books AS b ON b.book_id = ab.book_id
+                                                              GROUP BY b.book_id;    
+                 ''')
+    columns_names = [i[0] for i in curs.description]
+    books = curs.fetchall()
+    books = [dict(zip(columns_names, row)) for row in books]
+    for row in books:
+        row_to_process = row['authors'].split(',')
+        row['authors'] = row_to_process
+        for idx in range(len(row_to_process)):
+            row_to_process[idx] = row_to_process[idx].rstrip()
+        row_to_process = ', '.join(row_to_process)
+        row['authors'] = row_to_process
     print(cookies)
-    print(template.render(email=email))
+    print(template.render(email=email, books=books))

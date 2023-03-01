@@ -7,7 +7,8 @@ curs = conn.cursor()
 curs.execute('''CREATE TABLE IF NOT EXISTS books (
                   book_id int NOT NULL AUTO_INCREMENT,
                   title char(50),
-                  price DECIMAL(3,2),
+                  price DECIMAL(5,2),
+                  description VARCHAR(100) default '',
                   PRIMARY KEY (book_id)
                 );   
              ''')
@@ -32,7 +33,8 @@ curs.execute('''CREATE TABLE IF NOT EXISTS users (
                   user_id int NOT NULL AUTO_INCREMENT,
                   email char(50),
                   password char(50),
-                  is_loged bool default TRUE, 
+                  is_loged bool default TRUE,
+                  has_permision bool default TRUE, 
                   PRIMARY KEY (user_id),
                   UNIQUE (email)
                 );

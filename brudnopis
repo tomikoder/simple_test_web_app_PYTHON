@@ -1,3 +1,4 @@
-obecny czas
-
-
+curs.execute('''SELECT a.author_id, GROUP_CONCAT(CONCAT(a.first_name, ' ', a.last_name), ' ') AS full_name, b.* FROM authors AS a INNER JOIN authors_books AS ab ON a.author_id = ab.author_id
+                                                          INNER JOIN books AS b ON b.book_id = ab.book_id
+                                                          GROUP BY b.book_id;
+             ''')
