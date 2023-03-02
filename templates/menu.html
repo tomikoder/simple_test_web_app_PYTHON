@@ -21,6 +21,7 @@
     <b>Author:</b> {{ b.authors }}</p>
     <p><b>Description</b>: {{ b.description }}</p>
     <p>Price: {{ b.price }}</p>
+    <a href="/cgi-bin/edit_book.py?book_id={{ b.book_id }}">Edytuj</a>
     <br>
     {% endfor %}
 

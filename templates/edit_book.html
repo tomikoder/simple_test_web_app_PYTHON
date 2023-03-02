@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TEST</title>
+    <style>
+    #div1 {
+    float: left;
+    }
+    #div2 {
+    clear: left;
+    }
+    </style>
+
+</head>
+<body>
+<h1>Edit book</h1>
+<form action="/cgi-bin/edit_book.py" method="post">
+  <label for="title">Title</label><br>
+  <input type="text" id="title" name="title" value="{{ book.title }}"><br>
+  <label for="price">price</label><br>
+  <input type="number" id="price" min="1" value="{{ book.price }}" step=".01">
+  <p>Authors: </p>
+  <div id="div1">
+        <select name="authors" multiple size="4">
+            {% for a in all_authors %}
+            {% if a.author_belong %}
+            <option value={{ a.author_id }} selected>{{ a.full_name }}</option>
+            {% else %}
+            <option value={{ a.author_id }}>{{ a.full_name }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+  </div>
+  <div id="div2">
+      <input type="submit" value="Submit">
+  </div>
+</form>
+</body>
+</html>

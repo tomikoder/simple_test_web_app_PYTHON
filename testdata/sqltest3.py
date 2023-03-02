@@ -11,9 +11,6 @@ f_n = 'Adolf'
 l_n = 'Hitler'
 conn = Connect(**DATA_TO_LOGIN_TO_DB)
 curs = conn.cursor()
-curs.execute('''INSERT INTO authors (first_name, last_name) 
-                VALUES (%s, %s);
-            ''' % (convert_str(f_n), convert_str(l_n)))
 
 
 
