@@ -1,19 +1,19 @@
-  <div id="div2">
-      <label>authors:
-        <select name="pets" multiple size="4">
-            <optgroup label="4-legged pets">
-            <option value="dog">Dog</option>
-            <option value="cat">Cat</option>
-            <option value="hamster" disabled>Hamster</option>
-            </optgroup>
-        </select>
-    </label>
-
-
-<form>
   <label for="title">Title</label><br>
   <input type="text" id="title" name="title" value="{{ book.title }}"><br>
   <label for="price">price</label><br>
-  <input type="number" id="price" min="1" value="{{ book.price }}" step=".01">
-
-</form>
+  <input type="number" id="price" min="1" name="price" value="{{ book.price }}" step=".01">
+  <p>Authors: </p>
+  <div id="div1">
+        <select name="authors" multiple size="4">
+            {% for a in all_authors %}
+            {% if a.author_belong %}
+            <option value={{ a.author_id }} selected>{{ a.full_name }}</option>
+            {% else %}
+            <option value={{ a.author_id }}>{{ a.full_name }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+  </div>
+  <div id="div2">
+      <input type="submit" value="Submit">
+  </div>

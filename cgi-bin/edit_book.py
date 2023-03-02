@@ -4,6 +4,7 @@ from settings import DATA_TO_LOGIN_TO_DB, PROJECT_DIR, YOUR_DOMAIN
 from MySQLdb import Connect
 from helpfunctions import check_session
 import string
+from helpfunctions import convert_str
 
 environment = Environment(loader=FileSystemLoader(os.path.join(PROJECT_DIR, 'templates')))
 
@@ -20,10 +21,32 @@ if not (is_loged):
     link_to_redirect = YOUR_DOMAIN + 'login.py'
     print('Refresh: 0; %s' % link_to_redirect)
 elif os.environ['REQUEST_METHOD'] == 'POST':
-    form = cgi.FieldStorage()
+    conn = Connect(**DATA_TO_LOGIN_TO_DB)
+    curs = conn.cursor()
+
+
     template = environment.get_template("test.html")
+    authors_id =  [int(a_id.value) for a_id in form['authors']]
+    curs.execute('''UPDATE books SET title = %s,
+                                     description = %s,
+                                     price = %s    
+                                 WHERE book_id = %s;
+                 ''' % (convert_str(form['title'].value), convert_str(form['description'].value), form['price'].value, form['book_id'].value))
+
+    curs.execute('''SELECT a.author_id FROM authors AS a INNER JOIN authors_books AS ab ON a.author_id = ab.author_id
+                                                              INNER JOIN books AS b ON b.book_id = ab.book_id
+                                                              WHERE b.book_id = %s 
+                                  ''' % (form['book_id'].value))
+    authors_id2 = curs.fetchall()
+    authors_id2 = [a[0] for a in authors_id2]
+    authors_id = set(authors_id)
+    authors_id2 = set(authors_id2)
+    if not (authors_id == authors_id2):
+        for a in authors_id:
+            curs.execute('''INSERT INTO authors_books (author_id, book_id) VALUES (%s, %s); 
+                         ''' % (a, form['book_id'].value))
     print(cookies)
-    print(template.render(val=form))
+    print(template.render(val=authors_id2))
 
 
 elif 'book_id' not in form:

@@ -3,23 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>TEST</title>
-    <style>
-    #div1 {
-    float: left;
-    }
-    #div2 {
-    clear: left;
-    }
-    </style>
 
 </head>
 <body>
 <h1>Edit book</h1>
-<form action="/cgi-bin/edit_book.py" method="post">
+<form action="/cgi-bin/edit_book.py" method="post" enctype="multipart/form-data" id="bookform">
   <label for="title">Title</label><br>
   <input type="text" id="title" name="title" value="{{ book.title }}"><br>
   <label for="price">price</label><br>
-  <input type="number" id="price" min="1" value="{{ book.price }}" step=".01">
+  <input type="number" id="price" min="1" name="price" value="{{ book.price }}" step=".01">
   <p>Authors: </p>
   <div id="div1">
         <select name="authors" multiple size="4">
@@ -32,9 +24,17 @@
             {% endfor %}
         </select>
   </div>
+    <p>Description</p>
+
+    <textarea rows="4" cols="50" name="description" form="bookform">{{ book.description }}</textarea>
+
   <div id="div2">
       <input type="submit" value="Submit">
   </div>
+  <input type="hidden" name="book_id" value={{ book.book_id }}>
 </form>
+
+
+
 </body>
 </html>
