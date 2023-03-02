@@ -11,7 +11,7 @@
 
 <h2>Remove authors</h2>
 <label for="authors">Choose a autor:</label>
-<select name="authors" id="authors" form="add_author_form">
+<select name="author" id="authors" form="add_author_form">
   {% for a in authors %}
   <option value="{{ a.author_id }}">{{ a.full_name }}</option>
   {% endfor %}
@@ -25,7 +25,7 @@
 
 <br>
 <h2>Add author</h2>
-<form action="/add_author.py">
+<form action="/cgi-bin/add_author.py">
   <label for="first_name">First name:</label>
   <input type="text" id="first_name" name="first_name"><br><br>
   <label for="last_name">Last name:</label>
