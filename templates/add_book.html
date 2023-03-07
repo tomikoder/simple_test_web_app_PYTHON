@@ -2,9 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Add Book</title>
 </head>
 <body>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Book</title>
+
+</head>
+<body>
+<h1>Add book</h1>
+<form action="/cgi-bin/add_book.py" method="post" enctype="multipart/form-data" id="bookform">
+  <label for="title">Title</label><br>
+  <input type="text" id="title" name="title"><br>
+  <label for="price">price</label><br>
+  <input type="number" id="price" min="1" name="price" step=".01">
+  <p>Authors: </p>
+  <div id="div1">
+        <select name="authors" multiple size="4">
+            {% for a in all_authors %}
+            <option value={{ a.author_id }}>{{ a.full_name }}</option>
+            {% endfor %}
+        </select>
+        <a href="/cgi-bin/add_author.py">Add</a>
+  </div>
+    <p>Description</p>
+
+    <textarea rows="4" cols="50" name="description" form="bookform"></textarea>
+
+  <div id="div2">
+      <input type="submit" value="Submit">
+  </div>
+  <input type="hidden" name="book_id" value=>
+</form>
+
+
+</body>
+</html>
+
 
 </body>
 </html>

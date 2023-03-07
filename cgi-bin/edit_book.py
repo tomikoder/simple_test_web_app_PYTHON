@@ -26,11 +26,14 @@ elif os.environ['REQUEST_METHOD'] == 'POST':
 
 
     template = environment.get_template("update_db_success.html")
-    if isinstance(form['authors'], list):
+
+    if not 'authors' in form:
+        authors_id = set()
+    elif isinstance(form['authors'], list):
         authors_id =  set(int(a_id.value) for a_id in form['authors'])
     else:
         authors_id = set()
-        authors_id.add(form['authors'].value)
+        authors_id.add(int(form['authors'].value))
     curs.execute('''UPDATE books SET title = %s,
                                      description = %s,
                                      price = %s    
@@ -49,16 +52,19 @@ elif os.environ['REQUEST_METHOD'] == 'POST':
 
     if not (authors_id == authors_id2):
         for a in to_add:
-            curs.execute('''INSERT INTO authors_books (author_id, book_id) VALUES (%s, %s); 
+            curs.execute('''INSERT INTO authors_books (author_id, book_id) VALUES (%s, %s);
                          ''' % (a, form['book_id'].value))
         for a in to_remove:
-            curs.execute('''DELETE FROM authors_books WHERE author_id = %s; 
-                         ''' % (a))
+            curs.execute('''DELETE FROM authors_books WHERE author_id = %s AND book_id = %s;
+                         ''' % (a, form['book_id'].value))
+    actions = ['Row was changed.']
+
     conn.commit()
-    link_to_redirect = YOUR_DOMAIN + 'edit_book.py'
+
+    link_to_redirect = YOUR_DOMAIN + 'edit_book.py?book_id=' + str(form['book_id'].value)
     print(cookies)
     print('Refresh: 5; %s' % link_to_redirect)
-    print(template.render())
+    print(template.render(actions=actions))
 
 
 elif 'book_id' not in form:
@@ -85,7 +91,7 @@ else:
         print('Refresh: 5; %s' % link_to_redirect)
         print(template.render(errors=errors))
     else:
-        template = environment.get_template("edit_book.html")
+        template = environment.get_template("add_book.html")
         columns_names = [i[0] for i in curs.description]
         books = curs.fetchall()
         books = [dict(zip(columns_names, row)) for row in books]
@@ -114,7 +120,7 @@ else:
         all_authors = [dict(zip(all_authors_columns, row)) for row in all_authors]
         print("Content-type: text/html")
         print(cookies)
-        print(template.render(book=book, all_authors=all_authors))
+        print(template.render(all_authors=all_authors))
 
 
 

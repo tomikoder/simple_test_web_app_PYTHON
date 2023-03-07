@@ -19,8 +19,25 @@ def check_session(cookies):
                         ''' % (user, convert_str(session)))
 
     if is_valid:
+        curs.execute('''UPDATE sessions
+                        SET expire_time = DATE_ADD(now() , INTERVAL 10 MINUTE)
+                        WHERE user_id = %s; 
+                     ''' % (user))
+        conn.commit()
         return True
     else:
         return False
+
+def translate_to_sql(form):
+    sql = []
+    sql.append(form['title'].value)
+    if form['price'].value == '':
+        sql.append(0.0)
+    else:
+        sql.append(float(form['price'].value))
+    sql.append(form['description'].value)
+    sql = tuple(sql)
+    return str(sql)
+
 
 
